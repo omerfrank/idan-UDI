@@ -37,35 +37,47 @@ def handle_client_request(resource, client_socket):
     if url in REDIRECTION_DICTIONARY:
         # TO DO: send 302 redirection response
         pass
-
-    filetype = url.split('.')[1]
-    http_header = ""
-    if filetype == 'js':
-        http_header ="Content-Type: text/javascript; charset=UTF-8\r\n"
-    elif filetype == 'html':
-        http_header = "Content-Type: text/html; charset=utf-8\r\n"  # TO DO: generate proper HTTP header
-    elif filetype == 'jpg':
-        http_header = "Content-Type: image/jpeg;\r\n"  # TO DO: generate proper jpg header
-    elif filetype == 'ico':
-        http_header = "Content-Type: image/x-icon;\r\n"  # TO DO: generate proper jpg header
-    
-    elif filetype == 'css':
-        http_header ="Content-Type: text/css\r\n"
-    # TO DO: handle all other headers
-
-    filename = 'C:\\Users\\omerf\\Downloads\\atar\webroot\\' + url
-    #filename = r'C:\Users\omerf\OneDrive\שולחן העבודה\tomer\idan&UDI\index.html'
-    data = bytes()
+    http_response = "shalom".encode()
     try:
-        data = get_file_data(filename)
-        print(f"Reading {filename}")
-    except Exception as e:
-        print(f"Load file {filename} failed: {e}")
+        filetype = url.split('.')[1]
+        http_header = ""
+        if filetype == 'js':
+            http_header ="Content-Type: text/javascript; charset=UTF-8\r\n"
+        elif filetype == 'html':
+            http_header = "Content-Type: text/html; charset=utf-8\r\n"  # TO DO: generate proper HTTP header
+        elif filetype == 'jpg':
+            http_header = "Content-Type: image/jpeg;\r\n"  # TO DO: generate proper jpg header
+        elif filetype == 'ico':
+            http_header = "Content-Type: image/x-icon;\r\n"  # TO DO: generate proper jpg header
+        
+        elif filetype == 'css':
+            http_header ="Content-Type: text/css\r\n"
+        # TO DO: handle all other headers
+
+        filename = 'C:\\Users\\omerf\\Downloads\\atar\webroot\\' + url
+        #filename = r'C:\Users\omerf\OneDrive\שולחן העבודה\tomer\idan&UDI\index.html'
+        data = bytes()
+
+        try:
+            data = get_file_data(filename)
+            print(f"Reading {filename}")
+            if True:
+                http_header += f'Content-Length: {len(data)}\r\n\r\n'
+            #http_response = http_header.encode() + data
+            http_response = http_header.encode() + data
+        except:
+            print(f"couldt open {filename}")
+    except:
+        if "calculate-next" in url:
+            num = int(url[len(url)-1]) +1
+            http_response = ("Content-Type: text/html; charset=utf-8\r\n" + f'Content-Length: {len(str(num))}\r\n\r\n' +f"{num}").encode()
+        if "calculate-area":
+            num = url.split("=")
+            n1 = int(num[1][0]) * int(num[2][0]) /2
+            http_response = ("Content-Type: text/html; charset=utf-8\r\n" + f'Content-Length: {len(str(n1))}\r\n\r\n' +f"{n1}").encode()
+            
     
-    if True:
-        http_header += f'Content-Length: {len(data)}\r\n\r\n'
-    #http_response = http_header.encode() + data
-    http_response = http_header.encode() + data
+   
     client_socket.send(http_response)
 
 
@@ -112,7 +124,6 @@ def main():
         print('New connection received')
         client_socket.settimeout(SOCKET_TIMEOUT)
         handle_client(client_socket)
-#fasdczd
 
 if __name__ == "__main__":
     # Call the main handler function

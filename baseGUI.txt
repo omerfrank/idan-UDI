@@ -1,0 +1,68 @@
+import tkinter as tk
+app = tk.Tk()
+app.title("basse")
+app.geometry("500x400+600+300")
+# lbl = tk.Label(app,text="ziv")
+# button = tk.Button(app,text="zov")
+# ent = tk.Entry(app,text= "zob")
+# lbl.grid(row=0,column=0)
+# button.grid(row=0,column=1)
+# ent.grid(row=0,column=2)
+
+def calc_temp(t):
+    try:
+        t = float(t)
+        t = t *9/5 + 32
+    except:
+        print (t)
+        t = None
+    return t
+def convert(resoult,tmp):
+    tmp = calc_temp(tmp)
+    if tmp !=None:
+        resoult["text"] = str(tmp)
+    else:
+        resoult["text"] = str("NO")
+
+def clr(Cent,Rent):
+    Cent.delete(0,10)
+    Rent.config(text="")
+    
+c_lable = tk.Label(app,text="celziuios: ")
+c_ent = tk.Entry(app,text= "cel")
+f_lable = tk.Label(app,text="ferenhight: ")
+f_ent = tk.Entry(app,text= "fer")
+cnv_button = tk.Button(app,command=lambda: convert(tmp=(c_ent.get()),resoult=uotpot_lbl),text="convert")
+clr_button = tk.Button(app,text="clear", command=lambda: clr(c_ent,uotpot_lbl))
+mes_lbl = tk.Label(app,text="output:")
+uotpot_lbl = tk.Label(app,text="")
+
+
+
+
+mes_lbl.grid(row=4,column=0)
+cnv_button.grid(row=3,column=1)
+clr_button.grid(row=3,column=2)
+uotpot_lbl.grid(row=4,column=2)
+
+c_lable.grid(row=0,column=1)
+c_ent.grid(row=0,column=2)
+c_ent.focus()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.configure(bg= "blue")
+app.mainloop()

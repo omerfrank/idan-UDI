@@ -1,0 +1,31 @@
+import tkinter as tk
+import random
+
+def generate_coordinates(radius, canvas_width, canvas_height):
+    num_balls_x = canvas_width // (2 * radius)
+    num_balls_y = canvas_height // (2 * radius)
+
+    coordinates = []
+    for i in range(num_balls_x):
+        for j in range(num_balls_y):
+            x = i * 2 * radius + radius
+            y = j * 2 * radius + radius
+            coordinates.append((x, y))
+
+    random.shuffle(coordinates)
+    return coordinates[:num_balls_x * num_balls_y]
+
+app = tk.Tk()
+app.title("Non-Overlapping Balls")
+app.geometry("500x400+600+300")
+
+canvas = tk.Canvas(app, width=500, height=400, bg='white')
+canvas.pack(anchor=tk.CENTER, expand=True)
+
+radius = 19
+ball_positions = generate_coordinates(radius, 500, 400)
+
+for x, y in ball_positions:
+    canvas.create_oval(x - radius, y - radius, x + radius, y + radius, fill="blue")
+
+app.mainloop()

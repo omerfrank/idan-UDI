@@ -1,0 +1,124 @@
+import tkinter as tk
+import os
+from tkinter import filedialog
+from PIL import Image, ImageDraw, ImageTk
+from tkmacosx import Button
+TURN = 1
+BOARD = [[0 for j in range(3)] for i in range(3)]
+arr = [[0,0,0],[0,0,0],[0,0,0]]
+won = 100
+def plusN(num):
+    if num+1>2:
+        return 0
+    return num +1
+def minN(num):
+    if num -1 <-1:
+        return 2
+    return num - 1
+    
+def game_ended(coord,num):
+    """ check if game ended. on a draw return 0,red win return 1,
+        blue win return 2, not ended return 100.
+    """
+
+    win_row = arr[coord[0]][coord[1]] == arr[plusN(coord[0])][coord[1]]  and arr[coord[0]][coord[1]]== arr[minN(coord[0])][coord[1]]
+    win_col = arr[coord[0]][coord[1]] == arr[(coord[0])][plusN(coord[1])] and arr[coord[0]][coord[1]] == arr[(coord[0])][minN(coord[1])]
+    if win_col or win_row:
+        return "blue" if num == 2 else "red"
+    if coord == [0,0] or coord == [1,1] or coord == [2,2] :
+        if arr[0][0] == arr[0][1] and arr[0][1]  == arr[0][2] and arr[0][2] != 0:
+            return "blue" if num == 2 else "red"
+    if coord == [0,2] or coord == [1,1] or coord == [2,0]:
+        if arr[2][0] == arr[1][1] and arr[1][1] == arr[2][0] and arr[2][0] != 0:
+            return num
+    ntie = False
+    for i in arr:
+        if i.count(0) != 0:
+            ntie = True
+    if not ntie:
+        return "tie"
+    return 100
+
+def clicked(c,sq, coord):
+    global TURN, BOARD,won
+    #print("Mouse position: (%s %s)" % (event.x, event.y))
+    if won == 100:
+        num = TURN
+        if TURN == 1:
+            if BOARD[coord[0]][coord[1]] == 0:
+                c.itemconfig(sq, fill='red')
+                BOARD[coord[0]][coord[1]] = 1
+                arr[coord[0]][coord[1]] = 1
+                TURN = 2
+        else:
+            if BOARD[coord[0]][coord[1]] == 0:
+                c.itemconfig(sq, fill='blue')
+                BOARD[coord[0]][coord[1]] = 2
+                arr[coord[0]][coord[1]] = 2
+                TURN = 1
+        n = game_ended(coord=coord,num=num) 
+        if n != 100:
+            won = n
+        #print(BOARD)
+        return
+    print (f"{won} has already won!")
+    return
+
+def redstart():
+    global TURN
+    TURN = 1
+
+def bluestart():
+    global TURN
+    TURN = 2
+
+def main():
+    print(BOARD)
+    root = tk.Tk()
+    root.geometry('1100x1000+500+400')
+    root.attributes('-topmost', True)
+    leftf = tk.Frame(root)
+    leftf.grid(row=0, column=0)
+    rightf = tk.Frame(root)
+    rightf.grid(row=0,column=1, sticky=tk.NE)
+
+    lbl1 = tk.Label(rightf, text="     ׳‘׳—׳¨ ׳¦׳‘׳¢ ׳׳”׳×׳—׳™׳ ׳‘׳׳©׳—׳§")
+    lbl1.grid(row=0, column=1, sticky=tk.NE, pady=50)
+    btn_red = Button(rightf, text= 'RED',  bg='red', command=redstart)
+    btn_blue = Button(rightf, text='BLUE', bg='blue', command=bluestart)
+    btn_red.grid(row=1,column=1)
+    btn_blue.grid(row=1, column=0)
+
+    c = tk.Canvas(leftf, width=800, height=800, bg="white")
+    sq1 = c.create_rectangle(100, 50, 200,150, fill='yellow')
+    sq2 = c.create_rectangle(201, 50, 301, 150, fill='yellow')
+    sq3 = c.create_rectangle(302, 50, 402,150, fill='yellow')
+    sq4 = c.create_rectangle(100, 151, 200,251, fill='yellow')
+    sq5 = c.create_rectangle(201, 151, 301, 251, fill='yellow')
+    sq6 = c.create_rectangle(302, 151, 402,251, fill='yellow')
+    sq7 = c.create_rectangle(100, 252, 200,352, fill='yellow')
+    sq8 = c.create_rectangle(201, 252, 301,352, fill='yellow')
+    sq9 = c.create_rectangle(302,252, 402,352, fill='yellow')
+    c.pack()
+    c.tag_bind(sq1, '<Button-1>', lambda x: clicked(c, sq1, [0,0]))
+    c.tag_bind(sq2, '<Button-1>', lambda x: clicked(c, sq2, [0,1]))
+    c.tag_bind(sq3, '<Button-1>', lambda x: clicked(c, sq3, [0,2]))
+    c.tag_bind(sq4, '<Button-1>', lambda x: clicked(c, sq4, [1,0]))
+    c.tag_bind(sq5, '<Button-1>', lambda x: clicked(c, sq5, [1,1]))
+    c.tag_bind(sq6, '<Button-1>', lambda x: clicked(c, sq6, [1,2]))
+    c.tag_bind(sq7, '<Button-1>', lambda x: clicked(c, sq7, [2,0]))
+    c.tag_bind(sq8, '<Button-1>', lambda x: clicked(c, sq8, [2,1]))
+    c.tag_bind(sq9, '<Button-1>', lambda x: clicked(c, sq9, [2,2]))
+    #c.bind('<Enter>', motion)
+    if won != 100:
+        print (won)
+    print(won)
+
+
+
+
+
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()
